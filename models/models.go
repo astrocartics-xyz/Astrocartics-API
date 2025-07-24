@@ -40,4 +40,21 @@ type Stargate struct {
 type SpectralClassCount struct {
 	SpectralClass string `json:"spectral_class"`
 	SystemCount   int    `json:"system_count"`
+}
+
+// Planet represents a planet in a system.
+type Planet struct {
+	PlanetID          int     `json:"planet_id"`
+	PlanetName        string  `json:"planet_name"`
+	SystemID          int     `json:"system_id"`
+	Type              *string `json:"type"`
+	MoonCount         int     `json:"moon_count"`
+	AsteroidBeltCount int     `json:"asteroid_belt_count"`
+}
+
+// Station represents a station in a system.
+type Station struct {
+	StationID   int    `json:"station_id"`
+	StationName string `json:"station_name"`
+	SystemID    int    `json:"system_id"`
 } 

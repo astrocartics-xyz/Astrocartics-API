@@ -119,6 +119,72 @@ const docTemplate = `{
                 }
             }
         },
+        "/planets": {
+            "get": {
+                "description": "Get all planets, or search for a planet by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "planets"
+                ],
+                "summary": "Get planets",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Planet name to search for",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Planet"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/planets/{planetID}": {
+            "get": {
+                "description": "Get a single planet by its unique ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "planets"
+                ],
+                "summary": "Get a planet by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Planet ID",
+                        "name": "planetID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Planet"
+                        }
+                    }
+                }
+            }
+        },
         "/regions": {
             "get": {
                 "description": "Get all regions, or search for a region by name",
@@ -220,6 +286,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/regions/{regionID}/systems": {
+            "get": {
+                "description": "Get all systems for a specific region",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "systems"
+                ],
+                "summary": "Get systems by region ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Region ID",
+                        "name": "regionID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.System"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/reports/spectral-class-counts": {
             "get": {
                 "description": "Get a report of system counts by spectral class",
@@ -267,6 +368,72 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/models.Stargate"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/stations": {
+            "get": {
+                "description": "Get all stations, or search for a station by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stations"
+                ],
+                "summary": "Get stations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Station name to search for",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Station"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stations/{stationID}": {
+            "get": {
+                "description": "Get a single station by its unique ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stations"
+                ],
+                "summary": "Get a station by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Station ID",
+                        "name": "stationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Station"
                         }
                     }
                 }
@@ -341,6 +508,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/systems/{systemID}/planets": {
+            "get": {
+                "description": "Get all planets for a specific system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "planets"
+                ],
+                "summary": "Get planets by system ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "System ID",
+                        "name": "systemID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Planet"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/systems/{systemID}/stargates": {
             "get": {
                 "description": "Get all stargates for a specific system",
@@ -375,6 +577,41 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/systems/{systemID}/stations": {
+            "get": {
+                "description": "Get all stations for a specific system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stations"
+                ],
+                "summary": "Get stations by system ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "System ID",
+                        "name": "systemID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Station"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -389,6 +626,29 @@ const docTemplate = `{
                 },
                 "region_id": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.Planet": {
+            "type": "object",
+            "properties": {
+                "asteroid_belt_count": {
+                    "type": "integer"
+                },
+                "moon_count": {
+                    "type": "integer"
+                },
+                "planet_id": {
+                    "type": "integer"
+                },
+                "planet_name": {
+                    "type": "string"
+                },
+                "system_id": {
+                    "type": "integer"
+                },
+                "type": {
+                    "type": "string"
                 }
             }
         },
@@ -427,6 +687,20 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "stargate_name": {
+                    "type": "string"
+                },
+                "system_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Station": {
+            "type": "object",
+            "properties": {
+                "station_id": {
+                    "type": "integer"
+                },
+                "station_name": {
                     "type": "string"
                 },
                 "system_id": {

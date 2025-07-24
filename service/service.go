@@ -41,6 +41,10 @@ func GetSystemByName(name string) (*models.System, error) {
 	return dba.GetSystemByName(name)
 }
 
+func GetSystemsByRegionID(id int) ([]models.System, error) {
+	return dba.GetSystemsByRegionID(id)
+}
+
 func GetAllStargates() ([]models.Stargate, error) {
 	return dba.GetAllStargates()
 }
@@ -51,4 +55,38 @@ func GetStargateBySystemID(id int) ([]models.Stargate, error) {
 
 func GetSpectralClassCounts() ([]models.SpectralClassCount, error) {
 	return dba.GetSpectralClassCounts()
+}
+
+// Planet service functions
+func GetAllPlanets() ([]models.Planet, error) {
+	return dba.GetAllPlanets()
+}
+
+func GetPlanetByID(id int) (*models.Planet, error) {
+	return dba.GetPlanetByID(id)
+}
+
+func GetPlanetByName(name string) (*models.Planet, error) {
+	return dba.GetPlanetByName(name)
+}
+
+func GetPlanetsBySystemID(id int) ([]models.Planet, error) {
+	return dba.GetPlanetsBySystemID(id)
+}
+
+// Station service functions
+func GetAllStations() ([]models.Station, error) {
+	return dba.GetAllStations()
+}
+
+func GetStationByID(id int) (*models.Station, error) {
+	return dba.GetStationByID(id)
+}
+
+func GetStationByName(name string) (*models.Station, error) {
+	return dba.GetStationByName(name)
+}
+
+func GetStationsBySystemID(id int) ([]models.Station, error) {
+	return dba.GetStationsBySystemID(id)
 } 

@@ -9,6 +9,21 @@ definitions:
       region_id:
         type: integer
     type: object
+  models.Planet:
+    properties:
+      asteroid_belt_count:
+        type: integer
+      moon_count:
+        type: integer
+      planet_id:
+        type: integer
+      planet_name:
+        type: string
+      system_id:
+        type: integer
+      type:
+        type: string
+    type: object
   models.Region:
     properties:
       region_id:
@@ -32,6 +47,15 @@ definitions:
       stargate_id:
         type: integer
       stargate_name:
+        type: string
+      system_id:
+        type: integer
+    type: object
+  models.Station:
+    properties:
+      station_id:
+        type: integer
+      station_name:
         type: string
       system_id:
         type: integer
@@ -134,6 +158,49 @@ paths:
       summary: Get systems by constellation ID
       tags:
       - systems
+  /planets:
+    get:
+      consumes:
+      - application/json
+      description: Get all planets, or search for a planet by name
+      parameters:
+      - description: Planet name to search for
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Planet'
+            type: array
+      summary: Get planets
+      tags:
+      - planets
+  /planets/{planetID}:
+    get:
+      consumes:
+      - application/json
+      description: Get a single planet by its unique ID
+      parameters:
+      - description: Planet ID
+        in: path
+        name: planetID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Planet'
+      summary: Get a planet by ID
+      tags:
+      - planets
   /regions:
     get:
       consumes:
@@ -200,6 +267,29 @@ paths:
       summary: Get constellations by region ID
       tags:
       - constellations
+  /regions/{regionID}/systems:
+    get:
+      consumes:
+      - application/json
+      description: Get all systems for a specific region
+      parameters:
+      - description: Region ID
+        in: path
+        name: regionID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.System'
+            type: array
+      summary: Get systems by region ID
+      tags:
+      - systems
   /reports/spectral-class-counts:
     get:
       consumes:
@@ -234,6 +324,49 @@ paths:
       summary: Get stargates
       tags:
       - stargates
+  /stations:
+    get:
+      consumes:
+      - application/json
+      description: Get all stations, or search for a station by name
+      parameters:
+      - description: Station name to search for
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Station'
+            type: array
+      summary: Get stations
+      tags:
+      - stations
+  /stations/{stationID}:
+    get:
+      consumes:
+      - application/json
+      description: Get a single station by its unique ID
+      parameters:
+      - description: Station ID
+        in: path
+        name: stationID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Station'
+      summary: Get a station by ID
+      tags:
+      - stations
   /systems:
     get:
       consumes:
@@ -279,6 +412,29 @@ paths:
       summary: Get a system by ID
       tags:
       - systems
+  /systems/{systemID}/planets:
+    get:
+      consumes:
+      - application/json
+      description: Get all planets for a specific system
+      parameters:
+      - description: System ID
+        in: path
+        name: systemID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Planet'
+            type: array
+      summary: Get planets by system ID
+      tags:
+      - planets
   /systems/{systemID}/stargates:
     get:
       consumes:
@@ -302,4 +458,27 @@ paths:
       summary: Get stargates by system ID
       tags:
       - stargates
+  /systems/{systemID}/stations:
+    get:
+      consumes:
+      - application/json
+      description: Get all stations for a specific system
+      parameters:
+      - description: System ID
+        in: path
+        name: systemID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Station'
+            type: array
+      summary: Get stations by system ID
+      tags:
+      - stations
 swagger: "2.0"

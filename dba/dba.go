@@ -197,6 +197,44 @@ func GetSystemByIDOrConstellationID(id int) ([]models.System, error) {
 	return systems, nil
 }
 
+// GetSystemsByRegionID fetches all systems for a specific region ID.
+func GetSystemsByRegionID(regionID int) ([]models.System, error) {
+	db := GetDB()
+	sqlQuery := `
+		SELECT s.system_id, s.system_name, s.security_status, s.security_class, s.x_pos, s.y_pos, s.z_pos, s.constellation_id, s.spectral_class
+		FROM systems s
+		JOIN constellations c ON s.constellation_id = c.constellation_id
+		WHERE c.region_id = $1
+		ORDER BY s.system_name`
+	rows, err := db.Query(sqlQuery, regionID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query systems by region ID: %w", err)
+	}
+	defer rows.Close()
+	var systems []models.System
+	for rows.Next() {
+		var s models.System
+		if err := rows.Scan(
+			&s.SystemID,
+			&s.SystemName,
+			&s.SecurityStatus,
+			&s.SecurityClass,
+			&s.XPos,
+			&s.YPos,
+			&s.ZPos,
+			&s.ConstellationID,
+			&s.SpectralClass,
+		); err != nil {
+			return nil, fmt.Errorf("failed to scan system row: %w", err)
+		}
+		systems = append(systems, s)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during rows iteration for systems by region ID: %w", err)
+	}
+	return systems, nil
+}
+
 // GetSystemByName fetches a single system by its name.
 func GetSystemByName(name string) (*models.System, error) {
 	db := GetDB()
@@ -286,4 +324,146 @@ func GetSpectralClassCounts() ([]models.SpectralClassCount, error) {
 		return nil, fmt.Errorf("error during rows iteration for spectral class counts: %w", err)
 	}
 	return counts, nil
+}
+
+// Planet database functions
+func GetAllPlanets() ([]models.Planet, error) {
+	db := GetDB()
+	rows, err := db.Query("SELECT planet_id, planet_name, system_id, type, moon_count, asteroid_belt_count FROM planets ORDER BY planet_name")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query planets: %w", err)
+	}
+	defer rows.Close()
+	var planets []models.Planet
+	for rows.Next() {
+		var p models.Planet
+		if err := rows.Scan(&p.PlanetID, &p.PlanetName, &p.SystemID, &p.Type, &p.MoonCount, &p.AsteroidBeltCount); err != nil {
+			return nil, fmt.Errorf("failed to scan planet row: %w", err)
+		}
+		planets = append(planets, p)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during rows iteration for planets: %w", err)
+	}
+	return planets, nil
+}
+
+func GetPlanetByID(id int) (*models.Planet, error) {
+	db := GetDB()
+	var p models.Planet
+	err := db.QueryRow("SELECT planet_id, planet_name, system_id, type, moon_count, asteroid_belt_count FROM planets WHERE planet_id = $1", id).
+		Scan(&p.PlanetID, &p.PlanetName, &p.SystemID, &p.Type, &p.MoonCount, &p.AsteroidBeltCount)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to query planet by ID: %w", err)
+	}
+	return &p, nil
+}
+
+func GetPlanetByName(name string) (*models.Planet, error) {
+	db := GetDB()
+	var p models.Planet
+	err := db.QueryRow("SELECT planet_id, planet_name, system_id, type, moon_count, asteroid_belt_count FROM planets WHERE planet_name = $1", name).
+		Scan(&p.PlanetID, &p.PlanetName, &p.SystemID, &p.Type, &p.MoonCount, &p.AsteroidBeltCount)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to query planet by name: %w", err)
+	}
+	return &p, nil
+}
+
+func GetPlanetsBySystemID(systemID int) ([]models.Planet, error) {
+	db := GetDB()
+	rows, err := db.Query("SELECT planet_id, planet_name, system_id, type, moon_count, asteroid_belt_count FROM planets WHERE system_id = $1 ORDER BY planet_name", systemID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query planets by system ID: %w", err)
+	}
+	defer rows.Close()
+	var planets []models.Planet
+	for rows.Next() {
+		var p models.Planet
+		if err := rows.Scan(&p.PlanetID, &p.PlanetName, &p.SystemID, &p.Type, &p.MoonCount, &p.AsteroidBeltCount); err != nil {
+			return nil, fmt.Errorf("failed to scan planet row: %w", err)
+		}
+		planets = append(planets, p)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during rows iteration for planets by system ID: %w", err)
+	}
+	return planets, nil
+}
+
+// Station database functions
+func GetAllStations() ([]models.Station, error) {
+	db := GetDB()
+	rows, err := db.Query("SELECT station_id, station_name, system_id FROM stations ORDER BY station_name")
+	if err != nil {
+		return nil, fmt.Errorf("failed to query stations: %w", err)
+	}
+	defer rows.Close()
+	var stations []models.Station
+	for rows.Next() {
+		var s models.Station
+		if err := rows.Scan(&s.StationID, &s.StationName, &s.SystemID); err != nil {
+			return nil, fmt.Errorf("failed to scan station row: %w", err)
+		}
+		stations = append(stations, s)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during rows iteration for stations: %w", err)
+	}
+	return stations, nil
+}
+
+func GetStationByID(id int) (*models.Station, error) {
+	db := GetDB()
+	var s models.Station
+	err := db.QueryRow("SELECT station_id, station_name, system_id FROM stations WHERE station_id = $1", id).
+		Scan(&s.StationID, &s.StationName, &s.SystemID)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to query station by ID: %w", err)
+	}
+	return &s, nil
+}
+
+func GetStationByName(name string) (*models.Station, error) {
+	db := GetDB()
+	var s models.Station
+	err := db.QueryRow("SELECT station_id, station_name, system_id FROM stations WHERE station_name = $1", name).
+		Scan(&s.StationID, &s.StationName, &s.SystemID)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to query station by name: %w", err)
+	}
+	return &s, nil
+}
+
+func GetStationsBySystemID(systemID int) ([]models.Station, error) {
+	db := GetDB()
+	rows, err := db.Query("SELECT station_id, station_name, system_id FROM stations WHERE system_id = $1 ORDER BY station_name", systemID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query stations by system ID: %w", err)
+	}
+	defer rows.Close()
+	var stations []models.Station
+	for rows.Next() {
+		var s models.Station
+		if err := rows.Scan(&s.StationID, &s.StationName, &s.SystemID); err != nil {
+			return nil, fmt.Errorf("failed to scan station row: %w", err)
+		}
+		stations = append(stations, s)
+	}
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error during rows iteration for stations by system ID: %w", err)
+	}
+	return stations, nil
 } 
