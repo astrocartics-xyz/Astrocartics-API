@@ -7,6 +7,7 @@ import (
 
 	"github.com/astrocartics-xyz/Astrocartics-API/controller"
 	"github.com/astrocartics-xyz/Astrocartics-API/dba"
+	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
 
@@ -17,7 +18,9 @@ func main() {
 	}
 
 	dba.InitDB()
-	controller.RegisterRoutes()
+
+	r := chi.NewRouter()
+	controller.RegisterRoutes(r)
 
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -25,5 +28,5 @@ func main() {
 	}
 
 	log.Printf("Server starting on port %s...", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, r))
 } 
