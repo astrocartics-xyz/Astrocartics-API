@@ -1,0 +1,466 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a server for the Astrocartics application.",
+        "title": "Astrocartics API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8080",
+    "basePath": "/api/v1",
+    "paths": {
+        "/constellations": {
+            "get": {
+                "description": "Get all constellations, or search for a constellation by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "constellations"
+                ],
+                "summary": "Get constellations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Constellation name to search for",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Constellation"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/constellations/{constellationID}": {
+            "get": {
+                "description": "Get a single constellation by its unique ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "constellations"
+                ],
+                "summary": "Get a constellation by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Constellation ID",
+                        "name": "constellationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Constellation"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/constellations/{constellationID}/systems": {
+            "get": {
+                "description": "Get all systems for a specific constellation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "systems"
+                ],
+                "summary": "Get systems by constellation ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Constellation ID",
+                        "name": "constellationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.System"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/regions": {
+            "get": {
+                "description": "Get all regions, or search for a region by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "regions"
+                ],
+                "summary": "Get regions",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Region name to search for",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Region"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/regions/{regionID}": {
+            "get": {
+                "description": "Get a single region by its unique ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "regions"
+                ],
+                "summary": "Get a region by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Region ID",
+                        "name": "regionID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.Region"
+                        }
+                    }
+                }
+            }
+        },
+        "/regions/{regionID}/constellations": {
+            "get": {
+                "description": "Get all constellations for a specific region",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "constellations"
+                ],
+                "summary": "Get constellations by region ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Region ID",
+                        "name": "regionID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Constellation"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/reports/spectral-class-counts": {
+            "get": {
+                "description": "Get a report of system counts by spectral class",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Get spectral class counts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SpectralClassCount"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/stargates": {
+            "get": {
+                "description": "Get all stargates",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stargates"
+                ],
+                "summary": "Get stargates",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Stargate"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/systems": {
+            "get": {
+                "description": "Get all systems, or search for a system by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "systems"
+                ],
+                "summary": "Get systems",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "System name to search for",
+                        "name": "name",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.System"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/systems/{systemID}": {
+            "get": {
+                "description": "Get a single system by its unique ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "systems"
+                ],
+                "summary": "Get a system by ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "System ID",
+                        "name": "systemID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.System"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/systems/{systemID}/stargates": {
+            "get": {
+                "description": "Get all stargates for a specific system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stargates"
+                ],
+                "summary": "Get stargates by system ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "System ID",
+                        "name": "systemID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Stargate"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "models.Constellation": {
+            "type": "object",
+            "properties": {
+                "constellation_id": {
+                    "type": "integer"
+                },
+                "constellation_name": {
+                    "type": "string"
+                },
+                "region_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Region": {
+            "type": "object",
+            "properties": {
+                "region_id": {
+                    "type": "integer"
+                },
+                "region_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.SpectralClassCount": {
+            "type": "object",
+            "properties": {
+                "spectral_class": {
+                    "type": "string"
+                },
+                "system_count": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Stargate": {
+            "type": "object",
+            "properties": {
+                "destination_stargate_id": {
+                    "type": "integer"
+                },
+                "destination_system_id": {
+                    "type": "integer"
+                },
+                "stargate_id": {
+                    "type": "integer"
+                },
+                "stargate_name": {
+                    "type": "string"
+                },
+                "system_id": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.System": {
+            "type": "object",
+            "properties": {
+                "constellation_id": {
+                    "type": "integer"
+                },
+                "security_class": {
+                    "description": "Use pointer for nullable string",
+                    "type": "string"
+                },
+                "security_status": {
+                    "type": "number"
+                },
+                "spectral_class": {
+                    "description": "Use pointer for nullable string",
+                    "type": "string"
+                },
+                "system_id": {
+                    "type": "integer"
+                },
+                "system_name": {
+                    "type": "string"
+                },
+                "x_pos": {
+                    "type": "number"
+                },
+                "y_pos": {
+                    "type": "number"
+                },
+                "z_pos": {
+                    "type": "number"
+                }
+            }
+        }
+    }
+}

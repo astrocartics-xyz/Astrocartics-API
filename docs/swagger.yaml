@@ -1,0 +1,305 @@
+basePath: /api/v1
+definitions:
+  models.Constellation:
+    properties:
+      constellation_id:
+        type: integer
+      constellation_name:
+        type: string
+      region_id:
+        type: integer
+    type: object
+  models.Region:
+    properties:
+      region_id:
+        type: integer
+      region_name:
+        type: string
+    type: object
+  models.SpectralClassCount:
+    properties:
+      spectral_class:
+        type: string
+      system_count:
+        type: integer
+    type: object
+  models.Stargate:
+    properties:
+      destination_stargate_id:
+        type: integer
+      destination_system_id:
+        type: integer
+      stargate_id:
+        type: integer
+      stargate_name:
+        type: string
+      system_id:
+        type: integer
+    type: object
+  models.System:
+    properties:
+      constellation_id:
+        type: integer
+      security_class:
+        description: Use pointer for nullable string
+        type: string
+      security_status:
+        type: number
+      spectral_class:
+        description: Use pointer for nullable string
+        type: string
+      system_id:
+        type: integer
+      system_name:
+        type: string
+      x_pos:
+        type: number
+      y_pos:
+        type: number
+      z_pos:
+        type: number
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: This is a server for the Astrocartics application.
+  title: Astrocartics API
+  version: "1.0"
+paths:
+  /constellations:
+    get:
+      consumes:
+      - application/json
+      description: Get all constellations, or search for a constellation by name
+      parameters:
+      - description: Constellation name to search for
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Constellation'
+            type: array
+      summary: Get constellations
+      tags:
+      - constellations
+  /constellations/{constellationID}:
+    get:
+      consumes:
+      - application/json
+      description: Get a single constellation by its unique ID
+      parameters:
+      - description: Constellation ID
+        in: path
+        name: constellationID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Constellation'
+            type: array
+      summary: Get a constellation by ID
+      tags:
+      - constellations
+  /constellations/{constellationID}/systems:
+    get:
+      consumes:
+      - application/json
+      description: Get all systems for a specific constellation
+      parameters:
+      - description: Constellation ID
+        in: path
+        name: constellationID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.System'
+            type: array
+      summary: Get systems by constellation ID
+      tags:
+      - systems
+  /regions:
+    get:
+      consumes:
+      - application/json
+      description: Get all regions, or search for a region by name
+      parameters:
+      - description: Region name to search for
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Region'
+            type: array
+      summary: Get regions
+      tags:
+      - regions
+  /regions/{regionID}:
+    get:
+      consumes:
+      - application/json
+      description: Get a single region by its unique ID
+      parameters:
+      - description: Region ID
+        in: path
+        name: regionID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Region'
+      summary: Get a region by ID
+      tags:
+      - regions
+  /regions/{regionID}/constellations:
+    get:
+      consumes:
+      - application/json
+      description: Get all constellations for a specific region
+      parameters:
+      - description: Region ID
+        in: path
+        name: regionID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Constellation'
+            type: array
+      summary: Get constellations by region ID
+      tags:
+      - constellations
+  /reports/spectral-class-counts:
+    get:
+      consumes:
+      - application/json
+      description: Get a report of system counts by spectral class
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SpectralClassCount'
+            type: array
+      summary: Get spectral class counts
+      tags:
+      - reports
+  /stargates:
+    get:
+      consumes:
+      - application/json
+      description: Get all stargates
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Stargate'
+            type: array
+      summary: Get stargates
+      tags:
+      - stargates
+  /systems:
+    get:
+      consumes:
+      - application/json
+      description: Get all systems, or search for a system by name
+      parameters:
+      - description: System name to search for
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.System'
+            type: array
+      summary: Get systems
+      tags:
+      - systems
+  /systems/{systemID}:
+    get:
+      consumes:
+      - application/json
+      description: Get a single system by its unique ID
+      parameters:
+      - description: System ID
+        in: path
+        name: systemID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.System'
+            type: array
+      summary: Get a system by ID
+      tags:
+      - systems
+  /systems/{systemID}/stargates:
+    get:
+      consumes:
+      - application/json
+      description: Get all stargates for a specific system
+      parameters:
+      - description: System ID
+        in: path
+        name: systemID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Stargate'
+            type: array
+      summary: Get stargates by system ID
+      tags:
+      - stargates
+swagger: "2.0"

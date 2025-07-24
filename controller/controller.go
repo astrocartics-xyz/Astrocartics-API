@@ -28,7 +28,15 @@ func respondError(w http.ResponseWriter, status int, message string) {
 	respondJSON(w, status, map[string]string{"error": message})
 }
 
-// GetRegionsHandler handles requests for all regions, or a region by name if a query param is provided.
+// GetRegionsHandler godoc
+// @Summary Get regions
+// @Description Get all regions, or search for a region by name
+// @Tags regions
+// @Accept  json
+// @Produce  json
+// @Param name query string false "Region name to search for"
+// @Success 200 {array} models.Region
+// @Router /regions [get]
 func GetRegionsHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name != "" {
@@ -55,7 +63,15 @@ func GetRegionsHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, regions)
 }
 
-// GetRegionByIDHandler handles requests for a single region by ID.
+// GetRegionByIDHandler godoc
+// @Summary Get a region by ID
+// @Description Get a single region by its unique ID
+// @Tags regions
+// @Accept  json
+// @Produce  json
+// @Param regionID path int true "Region ID"
+// @Success 200 {object} models.Region
+// @Router /regions/{regionID} [get]
 func GetRegionByIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "regionID")
 	id, err := strconv.Atoi(idStr)
@@ -77,7 +93,15 @@ func GetRegionByIDHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, region)
 }
 
-// GetConstellationsHandler handles requests for all constellations, or a constellation by name if a query param is provided.
+// GetConstellationsHandler godoc
+// @Summary Get constellations
+// @Description Get all constellations, or search for a constellation by name
+// @Tags constellations
+// @Accept  json
+// @Produce  json
+// @Param name query string false "Constellation name to search for"
+// @Success 200 {array} models.Constellation
+// @Router /constellations [get]
 func GetConstellationsHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name != "" {
@@ -104,7 +128,15 @@ func GetConstellationsHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, constellations)
 }
 
-// GetConstellationByIDHandler handles requests for a single constellation by ID.
+// GetConstellationByIDHandler godoc
+// @Summary Get a constellation by ID
+// @Description Get a single constellation by its unique ID
+// @Tags constellations
+// @Accept  json
+// @Produce  json
+// @Param constellationID path int true "Constellation ID"
+// @Success 200 {array} models.Constellation
+// @Router /constellations/{constellationID} [get]
 func GetConstellationByIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "constellationID")
 	id, err := strconv.Atoi(idStr)
@@ -126,7 +158,15 @@ func GetConstellationByIDHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, constellation)
 }
 
-// GetConstellationsByRegionIDHandler handles requests for constellations in a specific region.
+// GetConstellationsByRegionIDHandler godoc
+// @Summary Get constellations by region ID
+// @Description Get all constellations for a specific region
+// @Tags constellations
+// @Accept  json
+// @Produce  json
+// @Param regionID path int true "Region ID"
+// @Success 200 {array} models.Constellation
+// @Router /regions/{regionID}/constellations [get]
 func GetConstellationsByRegionIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "regionID")
 	id, err := strconv.Atoi(idStr)
@@ -148,7 +188,15 @@ func GetConstellationsByRegionIDHandler(w http.ResponseWriter, r *http.Request) 
 	respondJSON(w, http.StatusOK, constellations)
 }
 
-// GetSystemsHandler handles requests for all systems, or a system by name if a query param is provided.
+// GetSystemsHandler godoc
+// @Summary Get systems
+// @Description Get all systems, or search for a system by name
+// @Tags systems
+// @Accept  json
+// @Produce  json
+// @Param name query string false "System name to search for"
+// @Success 200 {array} models.System
+// @Router /systems [get]
 func GetSystemsHandler(w http.ResponseWriter, r *http.Request) {
 	name := r.URL.Query().Get("name")
 	if name != "" {
@@ -175,7 +223,15 @@ func GetSystemsHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, systems)
 }
 
-// GetSystemByIDHandler handles requests for a single system by ID.
+// GetSystemByIDHandler godoc
+// @Summary Get a system by ID
+// @Description Get a single system by its unique ID
+// @Tags systems
+// @Accept  json
+// @Produce  json
+// @Param systemID path int true "System ID"
+// @Success 200 {array} models.System
+// @Router /systems/{systemID} [get]
 func GetSystemByIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "systemID")
 	id, err := strconv.Atoi(idStr)
@@ -197,7 +253,15 @@ func GetSystemByIDHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, system)
 }
 
-// GetSystemsByConstellationIDHandler handles requests for systems in a specific constellation.
+// GetSystemsByConstellationIDHandler godoc
+// @Summary Get systems by constellation ID
+// @Description Get all systems for a specific constellation
+// @Tags systems
+// @Accept  json
+// @Produce  json
+// @Param constellationID path int true "Constellation ID"
+// @Success 200 {array} models.System
+// @Router /constellations/{constellationID}/systems [get]
 func GetSystemsByConstellationIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "constellationID")
 	id, err := strconv.Atoi(idStr)
@@ -219,7 +283,14 @@ func GetSystemsByConstellationIDHandler(w http.ResponseWriter, r *http.Request) 
 	respondJSON(w, http.StatusOK, systems)
 }
 
-// GetStargatesHandler handles requests for all stargates.
+// GetStargatesHandler godoc
+// @Summary Get stargates
+// @Description Get all stargates
+// @Tags stargates
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.Stargate
+// @Router /stargates [get]
 func GetStargatesHandler(w http.ResponseWriter, r *http.Request) {
 	stargates, err := service.GetAllStargates()
 	if err != nil {
@@ -230,7 +301,15 @@ func GetStargatesHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, stargates)
 }
 
-// GetStargateBySystemIDHandler handles requests to get stargates by system ID.
+// GetStargateBySystemIDHandler godoc
+// @Summary Get stargates by system ID
+// @Description Get all stargates for a specific system
+// @Tags stargates
+// @Accept  json
+// @Produce  json
+// @Param systemID path int true "System ID"
+// @Success 200 {array} models.Stargate
+// @Router /systems/{systemID}/stargates [get]
 func GetStargateBySystemIDHandler(w http.ResponseWriter, r *http.Request) {
 	idStr := chi.URLParam(r, "systemID")
 	id, err := strconv.Atoi(idStr)
@@ -252,7 +331,14 @@ func GetStargateBySystemIDHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, stargates)
 }
 
-// GetSpectralClassCountsHandler handles requests for system counts by spectral class.
+// GetSpectralClassCountsHandler godoc
+// @Summary Get spectral class counts
+// @Description Get a report of system counts by spectral class
+// @Tags reports
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.SpectralClassCount
+// @Router /reports/spectral-class-counts [get]
 func GetSpectralClassCountsHandler(w http.ResponseWriter, r *http.Request) {
 	counts, err := service.GetSpectralClassCounts()
 	if err != nil {
