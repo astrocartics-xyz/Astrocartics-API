@@ -1,20 +1,23 @@
 package controller
 
-import "net/http"
+import "github.com/go-chi/chi/v5"
 
-func RegisterRoutes() {
-	const basePath = "/api/v1"
+func RegisterRoutes(r *chi.Mux) {
+	r.Route("/api/v1", func(r chi.Router) {
+		r.Get("/regions", GetRegionsHandler)
+		r.Get("/regions/{regionID}", GetRegionByIDHandler)
 
-	http.HandleFunc(basePath+"/regions", GetRegionsHandler)
-	http.HandleFunc(basePath+"/regions/id/", GetRegionByIDHandler)
-	http.HandleFunc(basePath+"/regions/name/", GetRegionByNameHandler)
-	http.HandleFunc(basePath+"/constellations", GetConstellationsHandler)
-	http.HandleFunc(basePath+"/constellations/id/", GetConstellationByIDHandler)
-	http.HandleFunc(basePath+"/constellations/name/", GetConstellationByNameHandler)
-	http.HandleFunc(basePath+"/systems", GetSystemsHandler)
-	http.HandleFunc(basePath+"/systems/id/", GetSystemByIDHandler)
-	http.HandleFunc(basePath+"/systems/name/", GetSystemByNameHandler)
-	http.HandleFunc(basePath+"/stargates", GetStargatesHandler)
-	http.HandleFunc(basePath+"/stargates/id/", GetStargateBySystemIDHandler)
-	http.HandleFunc(basePath+"/systems/spectral_class_counts", GetSpectralClassCountsHandler)
+		r.Get("/constellations", GetConstellationsHandler)
+		r.Get("/constellations/{constellationID}", GetConstellationByIDHandler)
+		r.Get("/regions/{regionID}/constellations", GetConstellationsByRegionIDHandler)
+
+		r.Get("/systems", GetSystemsHandler)
+		r.Get("/systems/{systemID}", GetSystemByIDHandler)
+		r.Get("/constellations/{constellationID}/systems", GetSystemsByConstellationIDHandler)
+
+		r.Get("/stargates", GetStargatesHandler)
+		r.Get("/systems/{systemID}/stargates", GetStargateBySystemIDHandler)
+
+		r.Get("/reports/spectral-class-counts", GetSpectralClassCountsHandler)
+	})
 } 
