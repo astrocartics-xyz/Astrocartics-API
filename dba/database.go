@@ -6,7 +6,8 @@ import (
 	"os"
 	"time"
 
-	_ "github.com/lib/pq"
+	// _ "github.com/lib/pq"
+	import _ "github.com/jackc/pgx/v5/stdlib"
 )
 
 var db *sql.DB
@@ -19,7 +20,8 @@ func InitDB() {
 
 	for i := 0; i < maxRetries; i++ {
 		var err error
-		db, err = sql.Open("postgres", connStr)
+		// db, err = sql.Open("postgres", connStr)
+		db, err = sql.Open("pgx", connStr)
 		if err != nil {
 			log.Printf("Attempt %d/%d: Error opening database connection: %v. Retrying in %v...", i+1, maxRetries, err, retryDelay)
 			time.Sleep(retryDelay)
