@@ -13,7 +13,7 @@ func RegisterRoutes(r *chi.Mux) {
 	))
 
 	r.Route("/v1", func(r chi.Router) {
-		// Redirect from /api/v1 to swagger UI
+		// Redirect from /v1 to swagger UI. We are on subdomain.
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 		})
