@@ -9,10 +9,10 @@ import (
 
 func RegisterRoutes(r *chi.Mux) {
 	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("https://localhost:8080/swagger/doc.json"), //The url pointing to API definition
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), //The url pointing to API definition
 	))
 
-	r.Route("/v1", func(r chi.Router) {
+	r.Route("api/v1", func(r chi.Router) {
 		// Redirect from /v1 to swagger UI. We are on subdomain.
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
