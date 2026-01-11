@@ -12,13 +12,8 @@ func RegisterRoutes(r *chi.Mux) {
 		httpSwagger.URL("https://api.astrocartics.xyz/swagger/doc.json"), //The url pointing to API definition
 	))
 
-<<<<<<< Updated upstream
-	r.Route("api/v1", func(r chi.Router) {
-		// Redirect from /v1 to swagger UI. We are on subdomain.
-=======
 	r.Route("/v1", func(r chi.Router) {
 		// Redirect from /v1 to swagger UI
->>>>>>> Stashed changes
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 		})
@@ -60,8 +55,4 @@ func RegisterRoutes(r *chi.Mux) {
 
 		r.Get("/reports/spectral-class-counts", GetSpectralClassCountsHandler)
 	})
-<<<<<<< Updated upstream
-} 
-=======
 }
->>>>>>> Stashed changes
