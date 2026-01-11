@@ -6,11 +6,7 @@ import (
 	"os"
 	"time"
 
-<<<<<<< Updated upstream
-	// _ "github.com/lib/pq"
-=======
 	_ "github.com/lib/pq"
->>>>>>> Stashed changes
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -24,13 +20,8 @@ func InitDB() {
 
 	for i := 0; i < maxRetries; i++ {
 		var err error
-<<<<<<< Updated upstream
-		// db, err = sql.Open("postgres", connStr)
-		db, err = sql.Open("pgx", connStr)
-=======
 		db, err = sql.Open("postgres", connStr)
 		//db, err = sql.Open("pgx", connStr)
->>>>>>> Stashed changes
 		if err != nil {
 			log.Printf("Attempt %d/%d: Error opening database connection: %v. Retrying in %v...", i+1, maxRetries, err, retryDelay)
 			time.Sleep(retryDelay)
@@ -54,8 +45,5 @@ func InitDB() {
 
 func GetDB() *sql.DB {
 	return db
-<<<<<<< Updated upstream
 } 
-=======
-}
->>>>>>> Stashed changes
+
