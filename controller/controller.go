@@ -6,8 +6,10 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/astrocartics-xyz/Astrocartics-API/service"
+	"github.com/astrocartics-xyz/Astrocartics-API/models"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -361,6 +363,66 @@ func GetStargateBySystemIDHandler(w http.ResponseWriter, r *http.Request) {
 	respondJSON(w, http.StatusOK, stargates)
 }
 
+// GetStargateByConstellationIDHandler godoc
+// @Summary Get stargates by constellation ID
+// @Description Get all stargates for a specific constellation
+// @Tags stargates
+// @Accept  json
+// @Produce  json
+// @Param constellationID path int true "Constellation ID"
+// @Success 200 {array} models.Stargate
+// @Router /constellations/{constellationID}/stargates [get]
+func GetStargateByConstellationIDHandler(w http.ResponseWriter, r *http.Request) {
+        idStr := chi.URLParam(r, "constellationID")
+        id, err := strconv.Atoi(idStr)
+        if err != nil {
+                respondError(w, http.StatusBadRequest, "Invalid constellation ID")
+                return
+        }
+
+        stargates, err := service.GetStargateByConstellationID(id)
+        if err != nil {
+                log.Printf("Error fetching stargates for constellation %d: %v", id, err)
+                respondError(w, http.StatusInternalServerError, "Failed to retrieve stargates")
+                return
+        }
+        if len(stargates) == 0 {
+                respondError(w, http.StatusNotFound, "No stargates found for this constellation")
+                return
+        }
+        respondJSON(w, http.StatusOK, stargates)
+}
+
+// GetStargateByRegionIDHandler godoc
+// @Summary Get stargates by region ID
+// @Description Get all stargates for a specific region
+// @Tags stargates
+// @Accept  json
+// @Produce  json
+// @Param regionID path int true "Region ID"
+// @Success 200 {array} models.Stargate
+// @Router /regions/{regionID}/stargates [get]
+func GetStargateByRegionIDHandler(w http.ResponseWriter, r *http.Request) {
+        idStr := chi.URLParam(r, "regionID")
+        id, err := strconv.Atoi(idStr)
+        if err != nil {
+                respondError(w, http.StatusBadRequest, "Invalid region ID")
+                return
+        }
+
+        stargates, err := service.GetStargateByRegionID(id)
+        if err != nil {
+                log.Printf("Error fetching stargates for region %d: %v", id, err)
+                respondError(w, http.StatusInternalServerError, "Failed to retrieve stargates")
+                return
+        }
+        if len(stargates) == 0 {
+                respondError(w, http.StatusNotFound, "No stargates found for this region")
+                return
+        }
+        respondJSON(w, http.StatusOK, stargates)
+}
+
 // GetSpectralClassCountsHandler godoc
 // @Summary Get spectral class counts
 // @Description Get a report of system counts by spectral class
@@ -567,4 +629,298 @@ func GetStationsBySystemIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	respondJSON(w, http.StatusOK, stations)
-} 
+}
+
+// GetSystemHeatmapByRegionHandler godoc
+// @Summary Get system heatmap by region
+// @Description Get per-period per-system metrics (kills, destroyed_value, dropped_value) for a region
+// @Tags reports
+// @Accept  json
+// @Produce  json
+// @Param regionID path int true "Region ID"
+// @Param mode query string false "Mode for aggregating kills (hour, day, week, month)" Enums(hour,day,week,month)
+// @Success 200 {object} map[string]interface{}
+// @Router /regions/{regionID}/heatmap [get]
+func GetSystemHeatmapByRegionHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse regionID from the URL
+	idStr := chi.URLParam(r, "regionID")
+	regionID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "invalid region ID", http.StatusBadRequest)
+		return
+	}
+	// Parse mode query parameter (default "hour")
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "hour"
+	}
+	// Call new service function that returns a full HeatmapReport (including window start/end).
+	report, err := service.GetSystemHeatmapReportByRegionMode(regionID, mode)
+	if err != nil {
+		// If the error indicates an invalid mode, return 400
+		if strings.Contains(err.Error(), "invalid mode") {
+			http.Error(w, fmt.Sprintf("invalid mode: %v", err), http.StatusBadRequest)
+			return
+		}
+		http.Error(w, fmt.Sprintf("error fetching heatmap: %v", err), http.StatusInternalServerError)
+		return
+	}
+	respondJSON(w, http.StatusOK, report)
+}
+
+// GetRecentKillmailsBySystemIDHandler godoc
+// @Summary Get 15 most recent killmails for a system
+// @Description Get the most recent 15 killmails for a given system.
+// @Tags killmails
+// @Accept json
+// @Produce json
+// @Param systemID path int true "System ID"
+// @Success 200 {array} models.Killmails
+// @Router /systems/{systemID}/killmails [get]
+func GetRecentKillmailsBySystemIDHandler(w http.ResponseWriter, r *http.Request) {
+	idStr := chi.URLParam(r, "systemID")
+	systemID, err := strconv.Atoi(idStr)
+	if err != nil {
+		respondError(w, http.StatusBadRequest, "Invalid system ID")
+		return
+	}
+	kills, err := service.GetRecentKillmailsBySystemID(systemID)
+	if err != nil {
+		log.Printf("Error fetching recent killmails for system %d: %v", systemID, err)
+		respondError(w, http.StatusInternalServerError, "Failed to retrieve killmails")
+		return
+	}
+	if kills == nil {
+		kills = []models.Killmails{}
+	}
+	respondJSON(w, http.StatusOK, kills)
+}
+
+// GetKillsBySystemIDHandler godoc
+// @Summary Get kill count by system ID
+// @Description Get all kills for a specific system
+// @Tags reports
+// @Accept  json
+// @Produce  json
+// @Param systemID path int true "System ID"
+// @Param mode query string false "Mode for aggregating kills (hour, day, week, month)" Enums(hour,day,week,month)
+// @Success 200 {array} models.SystemKills
+// @Router /systems/{systemID}/kills/summary [get]
+func GetKillsBySystemIDHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse the systemID from the URL
+	idStr := chi.URLParam(r, "systemID")
+	systemID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid system ID", http.StatusBadRequest)
+		return
+	}
+	// Parse the mode query parameter, default to "day"
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "day"
+	}
+	// Call the service layer
+	systemName, total, buckets, err := service.GetKillCountBySystemID(systemID, mode)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching kills: %v", err), http.StatusInternalServerError)
+		return
+	}
+	// Create the response payload
+	response := models.SystemKills{
+		SystemID: systemID,
+		SystemName: systemName,
+		KillStats: models.KillStats{
+			Mode:    mode,
+			Total:   total,
+			Buckets: buckets,
+		},
+	}
+	// Respond with JSON
+	respondJSON(w, http.StatusOK, response)
+}
+
+// GetKillsByConstellationIDHandler godoc
+// @Summary Get kill count by constellation ID
+// @Description Get all kills for a specific constellation
+// @Tags reports
+// @Accept  json
+// @Produce  json
+// @Param constellationID path int true "Constellation ID"
+// @Param mode query string false "Mode for aggregating kills (hour, day, week, month)" Enums(hour,day,week,month)
+// @Success 200 {array} models.ConstellationKills
+// @Router /constellations/{constellationID}/kills/summary [get]
+func GetKillsByConstellationIDHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse the systemID from the URL
+	idStr := chi.URLParam(r, "constellationID")
+	constellationID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid system ID", http.StatusBadRequest)
+		return
+	}
+	// Parse the mode query parameter, default to "day"
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "day"
+	}
+	// Call the service layer
+	constellationName, total, buckets, err := service.GetKillCountByConstellationID(constellationID, mode)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching kills: %v", err), http.StatusInternalServerError)
+		return
+	}
+	// Create the response payload
+	response := models.ConstellationKills{
+		ConstellationID: constellationID,
+		ConstellationName: constellationName,
+		KillStats: models.KillStats{
+			Mode:    mode,
+			Total:   total,
+			Buckets: buckets,
+		},
+	}
+	// Respond with JSON
+	respondJSON(w, http.StatusOK, response)
+}
+
+// GetKillsByRegionIDHandler godoc
+// @Summary Get kill count by region ID
+// @Description Get all kills for a specific region
+// @Tags reports
+// @Accept  json
+// @Produce  json
+// @Param regionID path int true "Region ID"
+// @Param mode query string false "Mode for aggregating kills (hour, day, week, month)" Enums(hour,day,week,month)
+// @Success 200 {array} models.RegionKills
+// @Router /regions/{regionID}/kills/summary [get]
+func GetKillsByRegionIDHandler(w http.ResponseWriter, r *http.Request) {
+	// Parse the systemID from the URL
+	idStr := chi.URLParam(r, "regionID")
+	regionID, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid region ID", http.StatusBadRequest)
+		return
+	}
+	// Parse the mode query parameter, default to "day"
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "day"
+	}
+	// Call the service layer
+	regionName, total, buckets, err := service.GetKillCountByRegionID(regionID, mode)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Error fetching kills: %v", err), http.StatusInternalServerError)
+		return
+	}
+	// Create the response payload
+	response := models.RegionKills{
+		RegionID: regionID,
+		RegionName: regionName,
+		KillStats: models.KillStats{
+			Mode:    mode,
+			Total:   total,
+			Buckets: buckets,
+		},
+	}
+	// Respond with JSON
+	respondJSON(w, http.StatusOK, response)
+}
+
+// GetTopRegionsHandler godoc
+// @Summary Get top 10 regions by kills
+// @Description Get the top 10 regions ranked by kill count for a specific time window
+// @Tags rankings
+// @Accept  json
+// @Produce  json
+// @Param mode query string false "Mode for most violence (hour, day, week, month)" Enums(hour,day,week,month)
+// @Success 200 {array} models.RegionKillCount
+// @Router /rankings/regions/top [get]
+func GetTopRegionsHandler(w http.ResponseWriter, r *http.Request) {
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "hour" // Default to hour if not specified
+	}
+	// Validate window
+	validModes := map[string]bool{"hour": true, "day": true, "week": true, "month": true}
+	if !validModes[mode] {
+		respondError(w, http.StatusBadRequest, "Invalid mode. Must be 'hour', 'day', 'week', or 'month'")
+		return
+	}
+	// Get the top regions
+	topRegions, err := service.GetTopRegionsByKills(mode)
+	if err != nil {
+		log.Printf("Error fetching top regions for window %s: %v", mode, err)
+		respondError(w, http.StatusInternalServerError, "Failed to fetch rankings")
+		return
+	}
+	// Return empty list instead of null if no results
+	if topRegions == nil {
+		topRegions = []models.RegionKillCount{}
+	}
+	respondJSON(w, http.StatusOK, topRegions)
+}
+
+// GetTopConstellationsHandler godoc
+// @Summary Get top 10 constellations by kills
+// @Description Get the top 10 constellations ranked by kill count for a specific time window
+// @Tags rankings
+// @Accept  json
+// @Produce  json
+// @Param mode query string false "Mode for most violence (hour, day, week, month)" Enums(hour,day,week,month)
+// @Success 200 {array} models.ConstellationKillCount
+// @Router /rankings/constellations/top [get]
+func GetTopConstellationsHandler(w http.ResponseWriter, r *http.Request) {
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "day" // Default to day if not specified
+	}
+	// Validate window
+	validModes := map[string]bool{"hour": true, "day": true, "week": true, "month": true}
+	if !validModes[mode] {
+		respondError(w, http.StatusBadRequest, "Invalid mode. Must be 'hour', 'day', 'week', or 'month'")
+		return
+	}
+	topConstellations, err := service.GetTopConstellationsByKills(mode)
+	if err != nil {
+		log.Printf("Error fetching top constellations for window %s: %v", mode, err)
+		respondError(w, http.StatusInternalServerError, "Failed to fetch rankings")
+		return
+	}
+	// Return empty list instead of null if no results
+	if topConstellations == nil {
+		topConstellations = []models.ConstellationKillCount{}
+	}
+	respondJSON(w, http.StatusOK, topConstellations)
+}
+
+// GetTopSystemsHandler godoc
+// @Summary Get top 10 systems by kills
+// @Description Get the top 10 systems ranked by kill count for a specific time window
+// @Tags rankings
+// @Accept  json
+// @Produce  json
+// @Param mode query string false "Mode for most violence (hour, day, week, month)" Enums(hour,day,week,month)
+// @Success 200 {array} models.SystemKillCount
+// @Router /rankings/systems/top [get]
+func GetTopSystemsHandler(w http.ResponseWriter, r *http.Request) {
+	mode := r.URL.Query().Get("mode")
+	if mode == "" {
+		mode = "day" // Default to day if not specified
+	}
+	// Validate window
+	validModes := map[string]bool{"hour": true, "day": true, "week": true, "month": true}
+	if !validModes[mode] {
+		respondError(w, http.StatusBadRequest, "Invalid mode. Must be 'hour', 'day', 'week', or 'month'")
+		return
+	}
+	topSystems, err := service.GetTopSystemsByKills(mode)
+	if err != nil {
+		log.Printf("Error fetching top systems for window %s: %v", mode, err)
+		respondError(w, http.StatusInternalServerError, "Failed to fetch rankings")
+		return
+	}
+	// Return empty list instead of null if no results
+	if topSystems == nil {
+		topSystems = []models.SystemKillCount{}
+	}
+	respondJSON(w, http.StatusOK, topSystems)
+}

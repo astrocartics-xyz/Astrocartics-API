@@ -84,6 +84,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/constellations/{constellationID}/kills/summary": {
+            "get": {
+                "description": "Get all kills for a specific constellation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Get kill count by constellation ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Constellation ID",
+                        "name": "constellationID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ],
+                        "type": "string",
+                        "description": "Mode for aggregating kills (hour, day, week, month)",
+                        "name": "mode",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ConstellationKills"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/constellations/{constellationID}/stargates": {
+            "get": {
+                "description": "Get all stargates for a specific constellation",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stargates"
+                ],
+                "summary": "Get stargates by constellation ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Constellation ID",
+                        "name": "constellationID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Stargate"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/constellations/{constellationID}/systems": {
             "get": {
                 "description": "Get all systems for a specific constellation",
@@ -185,6 +267,126 @@ const docTemplate = `{
                 }
             }
         },
+        "/rankings/constellations/top": {
+            "get": {
+                "description": "Get the top 10 constellations ranked by kill count for a specific time window",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rankings"
+                ],
+                "summary": "Get top 10 constellations by kills",
+                "parameters": [
+                    {
+                        "enum": [
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ],
+                        "type": "string",
+                        "description": "Mode for most violence (hour, day, week, month)",
+                        "name": "mode",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.ConstellationKillCount"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rankings/regions/top": {
+            "get": {
+                "description": "Get the top 10 regions ranked by kill count for a specific time window",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rankings"
+                ],
+                "summary": "Get top 10 regions by kills",
+                "parameters": [
+                    {
+                        "enum": [
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ],
+                        "type": "string",
+                        "description": "Mode for most violence (hour, day, week, month)",
+                        "name": "mode",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.RegionKillCount"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/rankings/systems/top": {
+            "get": {
+                "description": "Get the top 10 systems ranked by kill count for a specific time window",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "rankings"
+                ],
+                "summary": "Get top 10 systems by kills",
+                "parameters": [
+                    {
+                        "enum": [
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ],
+                        "type": "string",
+                        "description": "Mode for most violence (hour, day, week, month)",
+                        "name": "mode",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SystemKillCount"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/regions": {
             "get": {
                 "description": "Get all regions, or search for a region by name",
@@ -280,6 +482,133 @@ const docTemplate = `{
                             "type": "array",
                             "items": {
                                 "$ref": "#/definitions/models.Constellation"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/regions/{regionID}/heatmap": {
+            "get": {
+                "description": "Get per-period per-system metrics (kills, destroyed_value, dropped_value) for a region",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Get system heatmap by region",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Region ID",
+                        "name": "regionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ],
+                        "type": "string",
+                        "description": "Mode for aggregating kills (hour, day, week, month)",
+                        "name": "mode",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    }
+                }
+            }
+        },
+        "/regions/{regionID}/kills/summary": {
+            "get": {
+                "description": "Get all kills for a specific region",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Get kill count by region ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Region ID",
+                        "name": "regionID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ],
+                        "type": "string",
+                        "description": "Mode for aggregating kills (hour, day, week, month)",
+                        "name": "mode",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.RegionKills"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/regions/{regionID}/stargates": {
+            "get": {
+                "description": "Get all stargates for a specific region",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "stargates"
+                ],
+                "summary": "Get stargates by region ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Region ID",
+                        "name": "regionID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Stargate"
                             }
                         }
                     }
@@ -508,6 +837,88 @@ const docTemplate = `{
                 }
             }
         },
+        "/systems/{systemID}/killmails": {
+            "get": {
+                "description": "Get the most recent 15 killmails for a given system.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "killmails"
+                ],
+                "summary": "Get 15 most recent killmails for a system",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "System ID",
+                        "name": "systemID",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Killmails"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/systems/{systemID}/kills/summary": {
+            "get": {
+                "description": "Get all kills for a specific system",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "reports"
+                ],
+                "summary": "Get kill count by system ID",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "System ID",
+                        "name": "systemID",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "enum": [
+                            "hour",
+                            "day",
+                            "week",
+                            "month"
+                        ],
+                        "type": "string",
+                        "description": "Mode for aggregating kills (hour, day, week, month)",
+                        "name": "mode",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.SystemKills"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/systems/{systemID}/planets": {
             "get": {
                 "description": "Get all planets for a specific system",
@@ -629,6 +1040,96 @@ const docTemplate = `{
                 }
             }
         },
+        "models.ConstellationKillCount": {
+            "type": "object",
+            "properties": {
+                "constellation_id": {
+                    "type": "integer"
+                },
+                "constellation_name": {
+                    "type": "string"
+                },
+                "total_kills": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.ConstellationKills": {
+            "type": "object",
+            "properties": {
+                "buckets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PeriodCount"
+                    }
+                },
+                "constellation_id": {
+                    "type": "integer"
+                },
+                "constellation_name": {
+                    "type": "string"
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.Killmails": {
+            "type": "object",
+            "properties": {
+                "destroyed_value": {
+                    "type": "number"
+                },
+                "dropped_value": {
+                    "type": "number"
+                },
+                "fitted_value": {
+                    "type": "number"
+                },
+                "kill_ship": {
+                    "type": "integer"
+                },
+                "killmail_hash": {
+                    "type": "string"
+                },
+                "killmail_id": {
+                    "type": "integer"
+                },
+                "killmail_time": {
+                    "type": "string"
+                },
+                "system_id": {
+                    "type": "integer"
+                },
+                "total_value": {
+                    "type": "number"
+                },
+                "victim_ship": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.PeriodCount": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "destroyed_value": {
+                    "type": "number"
+                },
+                "dropped_value": {
+                    "type": "number"
+                },
+                "period": {
+                    "description": "e.g. \"2025-10-20\"",
+                    "type": "string"
+                }
+            }
+        },
         "models.Planet": {
             "type": "object",
             "properties": {
@@ -660,6 +1161,43 @@ const docTemplate = `{
                 },
                 "region_name": {
                     "type": "string"
+                }
+            }
+        },
+        "models.RegionKillCount": {
+            "type": "object",
+            "properties": {
+                "region_id": {
+                    "type": "integer"
+                },
+                "region_name": {
+                    "type": "string"
+                },
+                "total_kills": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.RegionKills": {
+            "type": "object",
+            "properties": {
+                "buckets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PeriodCount"
+                    }
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "region_id": {
+                    "type": "integer"
+                },
+                "region_name": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
                 }
             }
         },
@@ -714,6 +1252,9 @@ const docTemplate = `{
                 "constellation_id": {
                     "type": "integer"
                 },
+                "region_id": {
+                    "type": "integer"
+                },
                 "security_class": {
                     "description": "Use pointer for nullable string",
                     "type": "string"
@@ -741,6 +1282,43 @@ const docTemplate = `{
                     "type": "number"
                 }
             }
+        },
+        "models.SystemKillCount": {
+            "type": "object",
+            "properties": {
+                "system_id": {
+                    "type": "integer"
+                },
+                "system_name": {
+                    "type": "string"
+                },
+                "total_kills": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.SystemKills": {
+            "type": "object",
+            "properties": {
+                "buckets": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.PeriodCount"
+                    }
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "system_id": {
+                    "type": "integer"
+                },
+                "system_name": {
+                    "type": "string"
+                },
+                "total": {
+                    "type": "integer"
+                }
+            }
         }
     }
 }`
@@ -748,11 +1326,11 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "localhost:8080",
-	BasePath:         "/api/v1",
+	Host:             "api.astrocartics.xyz",
+	BasePath:         "/v1",
 	Schemes:          []string{},
 	Title:            "Astrocartics API",
-	Description:      "This is a server for the Astrocartics application.",
+	Description:      "The application programmer interface for Astrocartics for statistics about Eve Online.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 	LeftDelim:        "{{",

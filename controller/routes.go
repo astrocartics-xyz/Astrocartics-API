@@ -9,11 +9,16 @@ import (
 
 func RegisterRoutes(r *chi.Mux) {
 	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:8080/swagger/doc.json"), //The url pointing to API definition
+		httpSwagger.URL("https://api.astrocartics.xyz/swagger/doc.json"), //The url pointing to API definition
 	))
 
+<<<<<<< Updated upstream
 	r.Route("api/v1", func(r chi.Router) {
 		// Redirect from /v1 to swagger UI. We are on subdomain.
+=======
+	r.Route("/v1", func(r chi.Router) {
+		// Redirect from /v1 to swagger UI
+>>>>>>> Stashed changes
 		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/swagger/index.html", http.StatusMovedPermanently)
 		})
@@ -32,6 +37,8 @@ func RegisterRoutes(r *chi.Mux) {
 
 		r.Get("/stargates", GetStargatesHandler)
 		r.Get("/systems/{systemID}/stargates", GetStargateBySystemIDHandler)
+		r.Get("/constellations/{constellationID}/stargates", GetStargateByConstellationIDHandler)
+		r.Get("/regions/{regionID}/stargates", GetStargateByRegionIDHandler)
 
 		r.Get("/planets", GetPlanetsHandler)
 		r.Get("/planets/{planetID}", GetPlanetByIDHandler)
@@ -41,6 +48,20 @@ func RegisterRoutes(r *chi.Mux) {
 		r.Get("/stations/{stationID}", GetStationByIDHandler)
 		r.Get("/systems/{systemID}/stations", GetStationsBySystemIDHandler)
 
+		r.Get("/regions/{regionID}/heatmap", GetSystemHeatmapByRegionHandler)
+		r.Get("/systems/{systemID}/kills/summary", GetKillsBySystemIDHandler)
+		r.Get("/constellations/{constellationID}/kills/summary", GetKillsByConstellationIDHandler)
+		r.Get("/regions/{regionID}/kills/summary", GetKillsByRegionIDHandler)
+		r.Get("/systems/{systemID}/killmails", GetRecentKillmailsBySystemIDHandler)
+
+		r.Get("/rankings/regions/top", GetTopRegionsHandler)
+		r.Get("/rankings/constellations/top", GetTopConstellationsHandler)
+		r.Get("/rankings/systems/top", GetTopSystemsHandler)
+
 		r.Get("/reports/spectral-class-counts", GetSpectralClassCountsHandler)
 	})
+<<<<<<< Updated upstream
 } 
+=======
+}
+>>>>>>> Stashed changes

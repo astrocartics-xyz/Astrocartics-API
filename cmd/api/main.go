@@ -14,9 +14,9 @@ import (
 
 // @title Astrocartics API
 // @version 1.0
-// @description This is a server for the Astrocartics application.
-// @host localhost:8080
-// @BasePath /api/v1
+// @description The application programmer interface for Astrocartics for statistics about Eve Online.
+// @host api.astrocartics.xyz
+// @BasePath /v1
 func main() {
 	err := godotenv.Load()
 	if err != nil {
@@ -35,4 +35,4 @@ func main() {
 
 	log.Printf("Server starting on port %s...", port)
 	log.Fatal(http.ListenAndServe(":"+port, r))
-} 
+}

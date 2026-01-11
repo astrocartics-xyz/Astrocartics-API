@@ -1,4 +1,4 @@
-basePath: /api/v1
+basePath: /v1
 definitions:
   models.Constellation:
     properties:
@@ -8,6 +8,65 @@ definitions:
         type: string
       region_id:
         type: integer
+    type: object
+  models.ConstellationKillCount:
+    properties:
+      constellation_id:
+        type: integer
+      constellation_name:
+        type: string
+      total_kills:
+        type: integer
+    type: object
+  models.ConstellationKills:
+    properties:
+      buckets:
+        items:
+          $ref: '#/definitions/models.PeriodCount'
+        type: array
+      constellation_id:
+        type: integer
+      constellation_name:
+        type: string
+      mode:
+        type: string
+      total:
+        type: integer
+    type: object
+  models.Killmails:
+    properties:
+      destroyed_value:
+        type: number
+      dropped_value:
+        type: number
+      fitted_value:
+        type: number
+      kill_ship:
+        type: integer
+      killmail_hash:
+        type: string
+      killmail_id:
+        type: integer
+      killmail_time:
+        type: string
+      system_id:
+        type: integer
+      total_value:
+        type: number
+      victim_ship:
+        type: integer
+    type: object
+  models.PeriodCount:
+    properties:
+      count:
+        type: integer
+      destroyed_value:
+        type: number
+      dropped_value:
+        type: number
+      period:
+        description: e.g. "2025-10-20"
+        type: string
     type: object
   models.Planet:
     properties:
@@ -30,6 +89,30 @@ definitions:
         type: integer
       region_name:
         type: string
+    type: object
+  models.RegionKillCount:
+    properties:
+      region_id:
+        type: integer
+      region_name:
+        type: string
+      total_kills:
+        type: integer
+    type: object
+  models.RegionKills:
+    properties:
+      buckets:
+        items:
+          $ref: '#/definitions/models.PeriodCount'
+        type: array
+      mode:
+        type: string
+      region_id:
+        type: integer
+      region_name:
+        type: string
+      total:
+        type: integer
     type: object
   models.SpectralClassCount:
     properties:
@@ -64,6 +147,8 @@ definitions:
     properties:
       constellation_id:
         type: integer
+      region_id:
+        type: integer
       security_class:
         description: Use pointer for nullable string
         type: string
@@ -83,10 +168,35 @@ definitions:
       z_pos:
         type: number
     type: object
-host: localhost:8080
+  models.SystemKillCount:
+    properties:
+      system_id:
+        type: integer
+      system_name:
+        type: string
+      total_kills:
+        type: integer
+    type: object
+  models.SystemKills:
+    properties:
+      buckets:
+        items:
+          $ref: '#/definitions/models.PeriodCount'
+        type: array
+      mode:
+        type: string
+      system_id:
+        type: integer
+      system_name:
+        type: string
+      total:
+        type: integer
+    type: object
+host: api.astrocartics.xyz
 info:
   contact: {}
-  description: This is a server for the Astrocartics application.
+  description: The application programmer interface for Astrocartics for statistics
+    about Eve Online.
   title: Astrocartics API
   version: "1.0"
 paths:
@@ -135,6 +245,61 @@ paths:
       summary: Get a constellation by ID
       tags:
       - constellations
+  /constellations/{constellationID}/kills/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get all kills for a specific constellation
+      parameters:
+      - description: Constellation ID
+        in: path
+        name: constellationID
+        required: true
+        type: integer
+      - description: Mode for aggregating kills (hour, day, week, month)
+        enum:
+        - hour
+        - day
+        - week
+        - month
+        in: query
+        name: mode
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ConstellationKills'
+            type: array
+      summary: Get kill count by constellation ID
+      tags:
+      - reports
+  /constellations/{constellationID}/stargates:
+    get:
+      consumes:
+      - application/json
+      description: Get all stargates for a specific constellation
+      parameters:
+      - description: Constellation ID
+        in: path
+        name: constellationID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Stargate'
+            type: array
+      summary: Get stargates by constellation ID
+      tags:
+      - stargates
   /constellations/{constellationID}/systems:
     get:
       consumes:
@@ -201,6 +366,90 @@ paths:
       summary: Get a planet by ID
       tags:
       - planets
+  /rankings/constellations/top:
+    get:
+      consumes:
+      - application/json
+      description: Get the top 10 constellations ranked by kill count for a specific
+        time window
+      parameters:
+      - description: Mode for most violence (hour, day, week, month)
+        enum:
+        - hour
+        - day
+        - week
+        - month
+        in: query
+        name: mode
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ConstellationKillCount'
+            type: array
+      summary: Get top 10 constellations by kills
+      tags:
+      - rankings
+  /rankings/regions/top:
+    get:
+      consumes:
+      - application/json
+      description: Get the top 10 regions ranked by kill count for a specific time
+        window
+      parameters:
+      - description: Mode for most violence (hour, day, week, month)
+        enum:
+        - hour
+        - day
+        - week
+        - month
+        in: query
+        name: mode
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.RegionKillCount'
+            type: array
+      summary: Get top 10 regions by kills
+      tags:
+      - rankings
+  /rankings/systems/top:
+    get:
+      consumes:
+      - application/json
+      description: Get the top 10 systems ranked by kill count for a specific time
+        window
+      parameters:
+      - description: Mode for most violence (hour, day, week, month)
+        enum:
+        - hour
+        - day
+        - week
+        - month
+        in: query
+        name: mode
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SystemKillCount'
+            type: array
+      summary: Get top 10 systems by kills
+      tags:
+      - rankings
   /regions:
     get:
       consumes:
@@ -267,6 +516,93 @@ paths:
       summary: Get constellations by region ID
       tags:
       - constellations
+  /regions/{regionID}/heatmap:
+    get:
+      consumes:
+      - application/json
+      description: Get per-period per-system metrics (kills, destroyed_value, dropped_value)
+        for a region
+      parameters:
+      - description: Region ID
+        in: path
+        name: regionID
+        required: true
+        type: integer
+      - description: Mode for aggregating kills (hour, day, week, month)
+        enum:
+        - hour
+        - day
+        - week
+        - month
+        in: query
+        name: mode
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get system heatmap by region
+      tags:
+      - reports
+  /regions/{regionID}/kills/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get all kills for a specific region
+      parameters:
+      - description: Region ID
+        in: path
+        name: regionID
+        required: true
+        type: integer
+      - description: Mode for aggregating kills (hour, day, week, month)
+        enum:
+        - hour
+        - day
+        - week
+        - month
+        in: query
+        name: mode
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.RegionKills'
+            type: array
+      summary: Get kill count by region ID
+      tags:
+      - reports
+  /regions/{regionID}/stargates:
+    get:
+      consumes:
+      - application/json
+      description: Get all stargates for a specific region
+      parameters:
+      - description: Region ID
+        in: path
+        name: regionID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Stargate'
+            type: array
+      summary: Get stargates by region ID
+      tags:
+      - stargates
   /regions/{regionID}/systems:
     get:
       consumes:
@@ -412,6 +748,61 @@ paths:
       summary: Get a system by ID
       tags:
       - systems
+  /systems/{systemID}/killmails:
+    get:
+      consumes:
+      - application/json
+      description: Get the most recent 15 killmails for a given system.
+      parameters:
+      - description: System ID
+        in: path
+        name: systemID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Killmails'
+            type: array
+      summary: Get 15 most recent killmails for a system
+      tags:
+      - killmails
+  /systems/{systemID}/kills/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get all kills for a specific system
+      parameters:
+      - description: System ID
+        in: path
+        name: systemID
+        required: true
+        type: integer
+      - description: Mode for aggregating kills (hour, day, week, month)
+        enum:
+        - hour
+        - day
+        - week
+        - month
+        in: query
+        name: mode
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.SystemKills'
+            type: array
+      summary: Get kill count by system ID
+      tags:
+      - reports
   /systems/{systemID}/planets:
     get:
       consumes:
