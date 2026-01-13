@@ -357,7 +357,7 @@ func GetStargateBySystemIDHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if len(stargates) == 0 {
-		respondError(w, http.StatusNotFound, "No stargates found for this system")
+		respondError(w, http.StatusOK, []models.Stargate{})
 		return
 	}
 	respondJSON(w, http.StatusOK, stargates)
@@ -387,7 +387,7 @@ func GetStargateByConstellationIDHandler(w http.ResponseWriter, r *http.Request)
                 return
         }
         if len(stargates) == 0 {
-                respondError(w, http.StatusNotFound, "No stargates found for this constellation")
+                respondError(w, http.StatusOK, []models.Stargate{})
                 return
         }
         respondJSON(w, http.StatusOK, stargates)
@@ -417,7 +417,7 @@ func GetStargateByRegionIDHandler(w http.ResponseWriter, r *http.Request) {
                 return
         }
         if len(stargates) == 0 {
-                respondError(w, http.StatusNotFound, "No stargates found for this region")
+                respondError(w, http.StatusOK, []models.Stargate{})
                 return
         }
         respondJSON(w, http.StatusOK, stargates)
